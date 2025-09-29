@@ -45,3 +45,5 @@ conf
 .smarttomcat
 work
 work/
+
+node_modules/
