@@ -8,6 +8,8 @@ public class Triplecha250929Application {
 
 	public static void main(String[] args) {
 		SpringApplication.run(Triplecha250929Application.class, args);
+
+        System.out.print("Hello");
 	}
 
 }
