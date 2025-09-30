@@ -9,6 +9,7 @@
         body {
             margin: 0;
             overflow: hidden;
+            background: #fff;
         }
 
         canvas {
@@ -38,7 +39,7 @@
         const scene = new THREE.Scene();
 
         const camera = new THREE.PerspectiveCamera(
-            45,
+            65,
             window.innerWidth / window.innerHeight,
             0.1,
             100
@@ -64,12 +65,14 @@
         const renderer = new THREE.WebGLRenderer({
             antialias: true //텍스처 선명하게
         })
+        renderer.setClearColor(0x000000, 0); // canvas 완전 투명으로 변경 (background 삽입 위해서 넣어둠)
         renderer.setSize(window.innerWidth, window.innerHeight);
 
         const container = document.getElementById('main-container')
         container.appendChild(renderer.domElement);
 
         const texture = new THREE.TextureLoader().load('sobong/dotsobong.png', t => {
+            t.colorSpace = THREE.SRGBColorSpace;
             t.magFilter = THREE.NearestFilter;
             t.minFilter = THREE.NearestFilter;
             t.generateMipmaps = false;
@@ -101,7 +104,7 @@
             }
         });
 
-        const speed = 0.05;
+        const speed = 0.025;
         const BASE = 0.5;
         let dir = 1;
 
