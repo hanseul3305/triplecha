@@ -45,6 +45,22 @@
         );
         camera.position.z = 5;
 
+        function clampToView(mesh, camera, geomW = 1, geomH = 1, margin = 0) {
+            const dist = camera.position.z - mesh.position.z;
+
+            const halfH = Math.tan(THREE.MathUtils.degToRad(camera.fov * 0.5)) * dist;
+            const halfW = halfH * camera.aspect;
+            const halfObjW = (geomW * Math.abs(mesh.scale.x)) * 0.5;
+            const halfObjH = (geomH * Math.abs(mesh.scale.y)) * 0.5;
+            const minX = -halfW + halfObjW + margin;
+            const maxX = halfW - halfObjW - margin;
+            const minY = -halfH + halfObjH + margin;
+            const maxY = halfH - halfObjH - margin;
+
+            mesh.position.x = Math.min(maxX, Math.max(minX, mesh.position.x));
+            mesh.position.y = Math.min(maxY, Math.max(minY, mesh.position.y));
+        }
+
         const renderer = new THREE.WebGLRenderer({
             antialias: true //텍스처 선명하게
         })
@@ -57,7 +73,6 @@
             t.magFilter = THREE.NearestFilter;
             t.minFilter = THREE.NearestFilter;
             t.generateMipmaps = false;
-            material.transparent = true;
         });
         const geometry = new THREE.PlaneGeometry(1, 1);
         const material = new THREE.MeshBasicMaterial({
@@ -116,6 +131,7 @@
             sobong.scale.x = BASE * dir;
             sobong.scale.y = BASE;
 
+            clampToView(sobong, camera, 1, 1, 0.02);
         }
 
         function animate() {
