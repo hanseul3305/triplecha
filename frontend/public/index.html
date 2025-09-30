@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+
+    <section id="main-container"></section>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.152.2/build/three.module.js",
+                "three/": "https://unpkg.com/three@0.152.2/",
+                "three/addons/": "https://unpkg.com/three@0.152.2/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+
+
+        const scene = new THREE.Scene();
+
+        const camera = new THREE.PerspectiveCamera(
+            45,
+            window.innerWidth / window.innerHeight,
+            0.1,
+            100
+        );
+        camera.position.z = 5;
+
+        const renderer = new THREE.WebGLRenderer({
+            antialias: true //텍스처 선명하게
+        })
+        renderer.setSize(window.innerWidth, window.innerHeight);
+
+        const container = document.getElementById('main-container')
+        container.appendChild(renderer.domElement);
+
+        const texture = new THREE.TextureLoader().load('sobong/dotsobong.png', t => {
+            t.magFilter = THREE.NearestFilter;
+            t.minFilter = THREE.NearestFilter;
+            t.generateMipmaps = false;
+            material.transparent = true;
+        });
+        const geometry = new THREE.PlaneGeometry(1, 1);
+        const material = new THREE.MeshBasicMaterial({
+            map: texture,
+            transparent: true,
+            side: THREE.DoubleSide
+        });
+        const sobong = new THREE.Mesh(geometry, material);
+        sobong.position.set(0, 0, 0);
+        sobong.scale.set(1, 1, 1);
+        scene.add(sobong);
+
+        const keys = { ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: false };
+
+        window.addEventListener('keydown', (e) => {
+            if (keys.hasOwnProperty(e.code)) {
+                keys[e.code] = true;
+                e.preventDefault();
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            if (keys.hasOwnProperty(e.code)) {
+                keys[e.code] = false;
+                e.preventDefault();
+            }
+        });
+
+        const speed = 0.05;
+        const BASE = 0.5;
+        let dir = 1;
+
+        sobong.scale.set(BASE, BASE, 1);
+
+
+        function update() {
+
+            if (!sobong) return;
+
+            let dx = 0, dy = 0;
+
+            if (keys.ArrowLeft) {
+                dx -= speed;
+                dir = -1;
+                console.log('왼쪽 키 - dir:', dir, 'scale.x:', BASE * dir);
+            }
+            if (keys.ArrowRight) {
+                dx += speed;
+                dir = 1;
+                console.log('오른쪽 키 - dir:', dir, 'scale.x:', BASE * dir);
+            }
+            if (keys.ArrowUp) { dy += speed; }
+            if (keys.ArrowDown) { dy -= speed; }
+
+            sobong.position.x += dx;
+            sobong.position.y += dy;
+
+            sobong.scale.x = BASE * dir;
+            sobong.scale.y = BASE;
+
+        }
+
+        function animate() {
+            update();
+            renderer.render(scene, camera);
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+    </script>
+
+</body>
+
+</html>
